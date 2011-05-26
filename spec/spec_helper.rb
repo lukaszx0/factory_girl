@@ -50,6 +50,7 @@ module DefinesConstants
       def define_class(path, base = Object, &block)
         namespace, class_name = *constant_path(path)
         klass = Class.new(base)
+        namespace.send(:remove_const, class_name) if namespace.const_defined?(class_name)
         namespace.const_set(class_name, klass)
         klass.class_eval(&block) if block_given?
         @defined_constants << path
