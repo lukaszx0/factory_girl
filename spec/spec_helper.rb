@@ -63,6 +63,7 @@ module DefinesConstants
             table.column name, type
           end
         end
+        model.reset_column_information
         model
       end
 
