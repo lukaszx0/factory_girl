@@ -64,3 +64,63 @@ describe "a custom create" do
   end
 end
 
+describe "monkey patching" do
+  include FactoryGirl::Syntax::Methods
+
+  before do
+    define_model('User', :name => :string, :is_admin => :boolean) do
+      def has_name?
+        not name.empty?
+      end
+
+      def admin?
+        is_admin
+      end
+    end
+
+    FactoryGirl.define do
+      factory :user do
+      end
+
+      factory :admin, :parent => :user do
+        is_admin true
+      end
+    end
+  end
+
+  it "allows monkey patching" do
+    FactoryGirl.modify do
+      factory :user do
+        name "New User"
+      end
+    end
+    FactoryGirl.create(:user).should have_name
+  end
+
+  it "inherits new attributes to child factories" do
+    FactoryGirl.modify do
+      factory :user do
+        name "New User"
+      end
+    end
+    FactoryGirl.create(:admin).should have_name
+  end
+
+  it "doesn't overwrite already defined child's attributes" do
+    FactoryGirl.modify do
+      factory :user do
+        is_admin false
+      end
+    end
+    FactoryGirl.create(:admin).should be_admin
+  end
+
+  it "raises an exception if the factory was not defined before" do
+    lambda {
+      FactoryGirl.modify do
+        factory :unknown_factory do
+        end
+      end
+    }.should raise_error(ArgumentError)
+  end
+end

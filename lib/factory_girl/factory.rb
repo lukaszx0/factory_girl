@@ -37,6 +37,7 @@ module FactoryGirl
       @name       = factory_name_for(name)
       @options    = options
       @attributes = []
+      @children   = []
     end
 
     def inherit_from(parent) #:nodoc:
@@ -49,7 +50,17 @@ module FactoryGirl
           new_attributes << attribute.clone
         end
       end
+      parent.add_child_once(self)
       @attributes.unshift *new_attributes
+      update_children
+    end
+
+    def update_children
+      @children.each { |child| child.inherit_from(self) }
+    end
+
+    def add_child_once(child)
+      @children << child unless @children.include?(child)
     end
 
     def define_attribute(attribute)
@@ -62,6 +73,7 @@ module FactoryGirl
         raise AssociationDefinitionError, "Self-referencing association '#{name}' in factory '#{self.name}'"
       end
       @attributes << attribute
+      update_children
     end
 
     def add_callback(name, &block)
@@ -69,6 +81,7 @@ module FactoryGirl
         raise InvalidCallbackNameError, "#{name} is not a valid callback name. Valid callback names are :after_build, :after_create, and :after_stub"
       end
       @attributes << Attribute::Callback.new(name.to_sym, block)
+      update_children
     end
 
     def run(proxy_class, overrides) #:nodoc:

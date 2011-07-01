@@ -7,6 +7,10 @@ module FactoryGirl
         DSL.run(block)
       end
 
+      def modify(&block)
+        ModifyDSL.run(block)
+      end
+
       class DSL
         def self.run(block)
           new.instance_eval(&block)
@@ -28,6 +32,14 @@ module FactoryGirl
 
         def sequence(name, start_value = 1, &block)
           FactoryGirl.register_sequence(Sequence.new(name, start_value, &block))
+        end
+      end
+
+      class ModifyDSL < DSL
+        def factory(name, options = {}, &block)
+          factory = FactoryGirl.factory_by_name(name)
+          proxy = FactoryGirl::DefinitionProxy.new(factory)
+          proxy.instance_eval(&block)
         end
       end
     end
