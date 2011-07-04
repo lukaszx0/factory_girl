@@ -23,7 +23,6 @@ RSpec::Matchers.define :require_definitions_from do |file|
   end
 end
 
-
 describe "definition loading" do
   def self.in_directory_with_files(*files)
     before do
@@ -47,7 +46,7 @@ describe "definition loading" do
   describe "with factories.rb" do
     in_directory_with_files 'factories.rb'
     it_should_behave_like "finds definitions" do
-      it { should require_definitions_from('factories.rb') }
+      it { should require_definitions_from("#{@tmp_dir}/factories.rb") }
     end
   end
 
@@ -55,7 +54,7 @@ describe "definition loading" do
     describe "with a factories file under #{dir}" do
       in_directory_with_files File.join(dir, 'factories.rb')
       it_should_behave_like "finds definitions" do
-        it { should require_definitions_from("#{dir}/factories.rb") }
+        it { should require_definitions_from("#{@tmp_dir}/#{dir}/factories.rb") }
       end
     end
 
@@ -91,7 +90,7 @@ describe "definition loading" do
                               File.join(dir, 'factories', 'post_factory.rb'),
                               File.join(dir, 'factories', 'person_factory.rb')
       it_should_behave_like "finds definitions" do
-        it { should require_definitions_from("#{dir}/factories.rb") }
+        it { should require_definitions_from("#{@tmp_dir}/#{dir}/factories.rb") }
         it { should require_definitions_from("#{dir}/factories/post_factory.rb") }
         it { should require_definitions_from("#{dir}/factories/person_factory.rb") }
       end
