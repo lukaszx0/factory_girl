@@ -25,7 +25,7 @@ class Factory
 
     def run_callbacks(name)
       if @callbacks && @callbacks[name]
-        @callbacks[name].each do |block|
+        @callbacks[name].reverse.each do |block|
           block.arity.zero? ? block.call : block.call(@instance)
         end
       end

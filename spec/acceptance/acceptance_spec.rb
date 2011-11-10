@@ -42,6 +42,14 @@ describe "integration" do
       f.callback(:after_stub) {|u| u.last_name = 'Double-Stubby' }
     end
 
+    Factory.define :parent, :parent => :user do |f|
+      f.after_create {|u| u.first_name += " Sr." }
+    end
+
+    Factory.define :child, :parent => :parent do |f|
+      f.after_create {|u| u.first_name += " Jr." }
+    end
+
     Factory.define :business do |f|
       f.name 'Supplier of Awesome'
       f.association :owner, :factory => :user
@@ -300,6 +308,11 @@ describe "integration" do
       @user = Factory.stub(:user_with_inherited_callbacks)
       @user.first_name.should == 'Stubby'
       @user.last_name.should == 'Double-Stubby'
+    end
+
+    it "should run callbacks starting from the top of the inheritance tree" do
+      @user = Factory(:child)
+      @user.first_name.should == "Jimi Sr. Jr."
     end
   end
 end
