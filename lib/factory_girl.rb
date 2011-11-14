@@ -24,7 +24,6 @@ class Factory
   VERSION = "1.3.2"
 end
 
-if defined?(Rails) && Rails::VERSION::MAJOR == 2
-  require 'factory_girl/rails2'
-end
-
+# if defined?(Rails) && Rails::VERSION::MAJOR == 2
+#   require 'factory_girl/rails2'
+# end
